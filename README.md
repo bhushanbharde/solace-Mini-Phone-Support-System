@@ -829,3 +829,192 @@ Before submitting:
 - [ ] No passwords/API secrets committed
 - [ ] Recorded demo prepared
 - [ ] Twilio Console overview shown if available
+
+# 17. Local Configuration on macOS
+
+This project was developed and tested locally on macOS using **MAMP MySQL** and PHP's built-in development server.
+
+## 17.1 Prerequisites
+
+Install or have available:
+
+* macOS
+* MAMP
+* PHP 8.1+
+* MySQL/MariaDB
+* Terminal
+* Postman or curl
+
+## 17.2 Start MAMP
+
+Open:
+
+```text
+/Applications/MAMP
+```
+
+Start MAMP and click:
+
+```text
+Start Servers
+```
+
+Verify that both Apache and MySQL are running.
+
+This project uses the MAMP MySQL Unix socket rather than TCP because the local MAMP MySQL instance is exposed through:
+
+```text
+/Applications/MAMP/tmp/mysql/mysql.sock
+```
+
+## 17.3 Verify MySQL
+
+Run:
+
+```bash
+/Applications/MAMP/Library/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -u root -p
+```
+
+Enter the local MAMP MySQL password.
+
+Then verify:
+
+```sql
+SELECT VERSION();
+```
+
+## 17.4 Create and Import the Database
+
+From the project root:
+
+```bash
+cd /Users/<your-user>/Desktop/Projects/mini-phone-support-system
+```
+
+Import the provided SQL file:
+
+```bash
+/Applications/MAMP/Library/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -u root -p \
+  < database/schema.sql
+```
+
+The SQL file creates the `phone_support` database and inserts sample customers and orders.
+
+Verify:
+
+```bash
+/Applications/MAMP/Library/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -u root -p \
+  -e "SHOW DATABASES;"
+```
+
+Then:
+
+```bash
+/Applications/MAMP/Library/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -u root -p \
+  phone_support \
+  -e "SHOW TABLES;"
+```
+
+Expected tables:
+
+```text
+call_logs
+call_sessions
+customers
+order_logs
+orders
+support_routes
+voicemail_logs
+```
+
+## 17.5 Configure PHP Database Connection
+
+For the MAMP environment, `config/config.php` uses:
+
+```php
+'db' => [
+    'socket' => '/Applications/MAMP/tmp/mysql/mysql.sock',
+    'database' => 'phone_support',
+    'username' => 'root',
+    'password' => 'root',
+    'charset' => 'utf8mb4',
+],
+```
+
+`src/Database.php` creates the PDO connection using the Unix socket:
+
+```php
+$dsn = sprintf(
+    'mysql:unix_socket=%s;dbname=%s;charset=%s',
+    $db['socket'],
+    $db['database'],
+    $db['charset']
+);
+```
+
+For another MySQL installation, the connection can be changed to a normal host/port configuration such as `127.0.0.1:3306`.
+
+## 17.6 Start the PHP Application
+
+From the project root:
+
+```bash
+php -S localhost:8000 -t public
+```
+
+Keep this Terminal window running.
+
+The application is available at:
+
+```text
+http://localhost:8000
+```
+
+## 17.7 Verify the Application
+
+Open another Terminal and run:
+
+```bash
+curl http://localhost:8000/health.php
+```
+
+Expected:
+
+```json
+{
+    "success": true,
+    "status": "ok",
+    "database": "connected"
+}
+```
+
+## 17.8 Local Testing
+
+The application does not require a live telephone call for local testing.
+
+Twilio-style webhook parameters are simulated using curl/Postman:
+
+```text
+CallSid
+From
+To
+digit
+recording_id
+recording_url
+```
+
+Example:
+
+```bash
+curl "http://localhost:8000/inbound_call.php?CallSid=CA-DEMO-001&From=%2B919876543210&To=%2B919000000000"
+```
+
+The returne
