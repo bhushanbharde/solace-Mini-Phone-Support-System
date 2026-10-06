@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "Mini Phone Support System",
+    "_postman_id": "8f8a7a3b-2b1c-4f3a-a7f1-mini-phone-support",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "call_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/health.php"
+      }
+    },
+    {
+      "name": "Inbound Call - Known Caller",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/inbound_call.php?CallSid=CA-POSTMAN-001&From=%2B919876543210&To=%2B919000000000"
+      }
+    },
+    {
+      "name": "Menu - View Orders",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu_handler.php?call_id={{call_id}}&digit=1"
+      }
+    },
+    {
+      "name": "Menu - Select First Order",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu_handler.php?call_id={{call_id}}&digit=1"
+      }
+    },
+    {
+      "name": "Menu - Place Hold",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu_handler.php?call_id={{call_id}}&digit=2"
+      }
+    },
+    {
+      "name": "Menu - Voicemail Prompt",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu_handler.php?call_id={{call_id}}&digit=3"
+      }
+    },
+    {
+      "name": "Menu - Save Voicemail",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu_handler.php?call_id={{call_id}}&recording_id=RECORDING-POSTMAN-001"
+      }
+    },
+    {
+      "name": "Menu - Support",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/menu_handler.php?call_id={{call_id}}&digit=4"
+      }
+    },
+    {
+      "name": "Call Status / Logs",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/call_status.php?call_id={{call_id}}"
+      }
+    },
+    {
+      "name": "Inbound Call - Unknown Caller",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/inbound_call.php?CallSid=CA-POSTMAN-UNKNOWN-001&From=%2B919111111111&To=%2B919000000000"
+      }
+    }
+  ]
+}
